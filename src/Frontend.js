@@ -86,7 +86,7 @@ const FrontEnd = () => {
                     }
   }
   
-  const handleSubmit= (event) => {
+  const handleSubmit= (event) => { //Get the user Input 
     event.preventDefault();
     const Input = event.target.userInput.value;
     event.target.userInput.value="";
