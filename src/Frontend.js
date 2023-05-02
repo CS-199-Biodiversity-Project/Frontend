@@ -7,31 +7,10 @@ const FrontEnd = () => {
   const [passage, setPassage] = useState("");
   const [qa_output, setQAOutput]= useState("");
   
-
-  //const getRelation = async(userInput)=> {
-  //  await axios
-  //  .get("http://localhost:5000/search", {
-  //    params: { input: userInput } }, {
-  //      mode: 'no-cors',
-  //      headers: {
-  //        'Access-Control-Allow-Origin': "*",
-  //        'Content-Type':'application/json'
-  //      }} )
-  //  .then((response) => setNEROutput(response.data));
-  //};
-  //await axios.get('http://localhost:9200/content/_doc/_search', {
-  //  params: {
-  //  source: JSON.stringify(query),
-  //    source_content_type: 'application/json'
-  //  }
-  //setNEROutput(res.data.hits.hits[0]._source.passage);
-  //  return res.data.hits.hits[0]._source.passage;
-  
   const getRelation = async(userInput)=>{
     try{
-        await axios.get("http://localhost:5000/ner", {params: {input: userInput}})
+        await axios.get("http://localhost:5000/ner", {params: {input: userInput}}) //Get the Named Entities from User Input
                 .then((res) => {
-                  //console.log(res)
                   if (res.data == "There must be two entities in the input")
                   {
                     throw "There must be two entities in the input";
@@ -42,11 +21,11 @@ const FrontEnd = () => {
                   }
                   else
                   {
-                    setNEROutput(res.data);
+                    setNEROutput(res.data); //Store the named entities in NEROutput
                     return res.data;
                   }
                 }).then(async (ner_output)=>{
-                      await axios.get('http://localhost:9200/content/_doc/_search', {
+                      await axios.get('http://localhost:9200/content/_doc/_search', { //Get the passage where the two entities are found
                             params: { source: JSON.stringify({
                               query: {
                                 "bool":{
@@ -63,8 +42,6 @@ const FrontEnd = () => {
                               source_content_type: 'application/json'
                             }})
                             .then((res)=>{
-                              //console.log(res)
-                              console.log(res.data.hits.hits.length) 
                               if (res.data.hits.hits.length === 0)
                               {
                                 throw "NO DATA";
@@ -82,7 +59,7 @@ const FrontEnd = () => {
                               }
                             })
                             .then(async (passage)=>{
-                              await axios.get("http://localhost:5000/re", {
+                              await axios.get("http://localhost:5000/re", { //Get the Question and Answer
                                     params: {
                                       entity1: ner_output.entity1, 
                                       entity2: ner_output.entity2, 
@@ -98,7 +75,6 @@ const FrontEnd = () => {
                                       {
                                         setQAOutput(res.data)
                                       }
-                                      //console.log(res.data)
                                     });
                               });
                     });}
@@ -119,23 +95,35 @@ const FrontEnd = () => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-            <label>
-              Input: {''}
-              <input type="text" name= "userInput" defaultValue="" />
-            </label> {''}
-            <input type="submit" value="Submit" />
-      </form>{"\n"}
+      <form class = "form" onSubmit={handleSubmit}>
+        <label class ="input">
+          <input type ="text" name = "userInput" defaultValue = "" class = "forminput" placeholder = "Input"/>
+        </label> {''}
+        <input type ="submit" value ="Submit" class ="submit"/>
+      </form>
       <div>
-      <div >
-          <p>Entity1: {ner_output.entity1}</p>
-          <p>Entity2: {ner_output.entity2}</p>
-          <p>Type1: {ner_output.type1}</p>
-          <p>Type2: {ner_output.type2}</p>
-          <p>Passage: {passage}</p>
-          <p>Question: {qa_output}</p>
-      </div>
-      </div>
+        <div class = "entities">
+          <p class = "entitytitle"> Entities </p>
+          <div class = "entity">
+            <p class = "entityname">{ner_output.entity1}</p> 
+            <p class = "entitytype">{ner_output.type1}</p>
+          </div>
+          <div class = "entity">
+            <p class = "entityname">{ner_output.entity2}</p> 
+            <p class = "entitytype">{ner_output.type2}</p>
+          </div>
+        </div>
+        <div class = "qna">
+          <div class= "question">
+            <p class = "questiontitle"> Question </p>
+            <p class = "questionfield">{qa_output.question}</p>
+          </div>
+          <div class= "answer">
+            <p class = "answertitle"> Answer </p>
+            <p class = "answerfield">{qa_output.answer}</p>
+          </div>
+        </div>
+        </div>
     </div>
   );
 };
