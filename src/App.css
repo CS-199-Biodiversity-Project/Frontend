@@ -50,7 +50,7 @@ body {
   align: left;
 }
 
-.entities{
+.entities,.passage{
   padding-left: 20px;
   padding-right: 20px;
   padding-bottom: 30px;
@@ -59,11 +59,34 @@ body {
   background-color: #F6F1F1;
 }
 
-.entitytitle{
+.title{
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 30px;
+  width:  50rem;
+  margin: auto;
+  background-color: #19A7CE;
+}
+
+.entitytitle, .passagetitle{
   font-family: sans-serif;
   font-size: 30px;
   font-weight: 900;
   color: #19A7CE;
+}
+
+.bigtitle{
+  font-family: sans-serif;
+  font-size: 30px;
+  font-weight: 900;
+  color: #F6F1F1;
+}
+
+.titlename{
+  padding: 5px;
+  width: fit-content;
+  font-size: large;
+  color: #F6F1F1;
 }
 
 .entityname{
@@ -74,6 +97,12 @@ body {
 }
 .entityname:empty{
   display: none; 
+}
+
+.highlight{
+  padding: 15px;
+  width: fit-content;
+  color: #454545;
 }
 
 .entitytype{

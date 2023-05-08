@@ -5,6 +5,8 @@ import axios from "axios";
 const FrontEnd = () => {
   const [ner_output, setNEROutput]= useState("");
   const [passage, setPassage] = useState("");
+  const [title, setTitle] = useState("");
+  const [highlight, setHighlight] = useState("");
   const [qa_output, setQAOutput]= useState("");
   
   const getRelation = async(userInput)=>{
@@ -25,20 +27,31 @@ const FrontEnd = () => {
                     return res.data;
                   }
                 }).then(async (ner_output)=>{
-                      await axios.get('http://localhost:9200/content/_doc/_search', { //Get the passage where the two entities are found
+                      await axios.get('http://localhost:9200/sample/_doc/_search', { //Get the passage where the two entities are found
                             params: { source: JSON.stringify({
                               query: {
                                 "bool":{
                                   "must": [
                                         {
-                                          "match_phrase":{"passage":ner_output.entity1}
+                                          "match_phrase":{"passage":ner_output.entity1},
                                         },
                                         {
-                                          "match_phrase":{"passage":ner_output.entity2}
+                                          "match_phrase":{"passage":ner_output.entity2},
                                         }
                                   ]
                                 }
-                              }}),                     
+                              },
+                              "highlight": {
+                                "fields": {
+                                   "passage": {
+                                      "require_field_match": true,
+                                      "fragment_size": 500,
+                                      "number_of_fragments": 1,
+                                      "no_match_size": 20
+                                   }
+                                }
+                             }    
+                              }),                 
                               source_content_type: 'application/json'
                             }})
                             .then((res)=>{
@@ -48,7 +61,10 @@ const FrontEnd = () => {
                               }
                               else
                               {
+                                console.log(res.data.hits.hits[0])
+                                setHighlight(res.data.hits.hits[0].highlight.passage[0])
                                 setPassage(res.data.hits.hits[0]._source.passage);
+                                setTitle(res.data.hits.hits[0]._source.title);
                                 return res.data.hits.hits[0]._source.passage;
                               }
                             })
@@ -81,6 +97,7 @@ const FrontEnd = () => {
                     catch(e){
                       setNEROutput("")
                       setPassage("")
+                      setTitle("")
                       setQAOutput("")
                       alert(e)
                     }
@@ -112,6 +129,14 @@ const FrontEnd = () => {
             <p class = "entityname">{ner_output.entity2}</p> 
             <p class = "entitytype">{ner_output.type2}</p>
           </div>
+        </div>
+        <div class = "title"> 
+          <p class = "bigtitle"> Journal/Book Title </p>
+          <p class = "titlename"> {title} </p>
+        </div>
+        <div class = "passage"> 
+          <p class = "passagetitle"> Passage </p>
+          <p class = "highlight"> {highlight.replaceAll('<em>', '').replaceAll('</em>', '')} </p>
         </div>
         <div class = "qna">
           <div class= "question">
