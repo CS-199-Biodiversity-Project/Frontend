@@ -97,6 +97,7 @@ const FrontEnd = () => {
                     catch(e){
                       setNEROutput("")
                       setPassage("")
+                      setHighlight("")
                       setTitle("")
                       setQAOutput("")
                       alert(e)
