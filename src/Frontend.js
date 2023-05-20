@@ -136,7 +136,7 @@ const FrontEnd = () => {
           <p class = "titlename"> {title} </p>
         </div>
         <div class = "passage"> 
-          <p class = "passagetitle"> Passage </p>
+          <p class = "passagetitle"> Text </p>
           <p class = "highlight"> {highlight.replaceAll('<em>', '').replaceAll('</em>', '')} </p>
         </div>
         <div class = "qna">
